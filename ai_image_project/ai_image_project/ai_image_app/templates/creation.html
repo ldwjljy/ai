@@ -1,0 +1,517 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="ljy" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href=" {% static 'images/logo/LOGO.png'}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href=" {% static 'images/logo/LOGO.png'}">
+    <link rel="apple-touch-icon" href=" {% static 'images/logo/LOGO.png'}">
+    <title>文韵智能AI图像生成平台-创作中心</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        /* 容器布局 */
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 导航栏样式 */
+        :root {
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --text-dark: #333;
+            --primary-blue: #1890ff;
+            --gutter: 24px;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            padding: 0 var(--gutter);
+            transition: all 0.3s;
+        }
+
+        .nav-content {
+            display: flex;
+            height: 64px;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            width: 60px;
+            transition: transform 0.3s;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-blue);
+            transition: width 0.3s;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            padding: 8px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: var(--text-dark);
+        }
+
+        .signup-btn {
+            background: var(--primary-blue);
+            border: none;
+            color: white;
+        }
+
+        /* 主内容区 */
+        .main-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 历史记录面板 */
+        .history-panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        /* 组件样式 */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 15px 0;
+            resize: vertical;
+        }
+
+        .model-section {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .model-card {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .model-card.selected {
+            border-color: #1890ff;
+            background: #e6f7ff;
+        }
+
+        .ratio-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .ratio-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .ratio-btn.active {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        .generate-btn {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            transition: opacity 0.2s;
+        }
+
+        .generate-btn:hover {
+            opacity: 0.9;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #result-image {
+            max-width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 历史记录项 */
+        .history-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: #f8f8f8;
+        }
+
+        .history-thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #eee;
+            /* 加载失败时的背景 */
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .history-prompt {
+            font-size: 0.9em;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            max-height: 48px;
+            position: relative;
+        }
+
+        .history-prompt::after {
+            content: "...";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: white;
+            padding-left: 4px;
+        }
+
+        .history-time {
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        /* 清除按钮样式 */
+        .clear-history-btn {
+            padding: 4px 8px;
+            font-size: 0.8em;
+            background: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .clear-history-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* 模型版本 */
+        .model-version {
+            font-size: 0.8em;
+            color: #666;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <img src=" {% static 'images/logo/LOGO.png'}" alt="Logo" class="nav-logo">
+            <ul class="nav-menu">
+                <li><a href="{{ url 'index' }}">首页</a></li>
+                <li><a href="{{ url 'creation' }}">创作中心</a></li>
+                <li><a href="{{ url 'agreement' }}">用户协议</a></li>
+                <li><a href="{{ url 'profile' }}">个人主页</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="{{ url_for('login') }}"><button class="nav-btn login-btn">登录</button></a>
+                <a href="{{ url_for('login') }}"><button class="nav-btn signup-btn">免费试用</button></a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="main-container">
+            <div class="header">
+                <button class="back-btn" onclick="window.history.back()">← 返回</button>
+                <h1>小文图像生成</h1>
+            </div>
+            <h2>生成要求</h2>
+            <textarea id="prompt-input" placeholder="例如：未来的学生使用赛博朋克风格的笔，4K超清" rows="4"></textarea>
+            <h3>模型选择</h3>
+            <div class="model-section">
+                <div class="model-card selected" data-model="wpm2.1-t3k.info">
+                    <h4>🚀 极速生成模式</h4>
+                    <div class="model-version">wpm2.1-t3k.info</div>
+                </div>
+                <div class="model-card" data-model="ImageSynthesisModels.wmrc_v1">
+                    <h4>🎨 专业生成模式 </h4>
+                    <div class="model-version">ImageSynthesisModels.wmrc_v1 图像合成模型.wmrc_v1</div>
+                </div>
+            </div>
+            <h3>比例选择</h3>
+            <div class="ratio-buttons">
+                <button class="ratio-btn active" data-ratio="1024x1024">1:1</button>
+                <button class="ratio-btn" data-ratio="1280x720">16:9</button>
+                <button class="ratio-btn" data-ratio="720x1280">9:16</button>
+            </div>
+            <button class="generate-btn" id="generate-btn" onclick="handleGenerate()">
+                <span id="btn-text">立即生成</span>
+                <span id="loading-spinner" style="display: none;">🌀</span>
+            </button>
+            <div class="result-container">
+                <div id="result-image"></div>
+            </div>
+        </div>
+        <div class="history-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>生成记录</h3>
+                <button class="clear-history-btn" onclick="clearHistory()">清除记录</button>
+            </div>
+            <div id="history-list"></div>
+        </div>
+    </div>
+    <div class="loading" id="loading">AI正在创作中，请稍候...</div>
+    <script>
+        // 新增全局变量
+        let currentModel = 'wpm2.1-t3k.info'; // 初始化默认模型
+        // 模型选择交互增强
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                currentModel = card.dataset.model; // 更新全局变量
+
+                const validSizes = {
+                    'wpm2.1-t3k.info': ['1024x1024', '1280x720'],
+                    'ImageSynthesisModels.wmrc_v1': ['1024x1024', '720x1280']
+                };
+
+                document.querySelectorAll('.ratio-btn').forEach(btn => {
+                    btn.disabled = !validSizes[currentModel].includes(btn.dataset.ratio);
+                });
+            });
+        });
+
+        // 比例按钮点击交互
+        document.querySelectorAll('.ratio-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // 主生成函数
+        async function handleGenerate() {
+            // 获取用户输入的提示词
+            const prompt = document.getElementById('prompt-input').value.trim();
+
+            // 获取用户选择的模型
+            const model = document.querySelector('.model-card.selected').dataset.model;
+
+            // 获取用户选择的比例（按钮的 data-ratio 属性）
+            const ratioButton = document.querySelector('.ratio-btn.active');
+            let size = ratioButton.dataset.ratio; // 直接使用按钮的分辨率值
+
+            // 如果需要额外的映射（例如未来扩展比例），可以在此处添加映射表
+            const sizeMapping = {
+                '1:1': '1024x1024',
+                '16:9': '1280x720',
+                '9:16': '720x1280'
+            };
+
+            // 确保 size 是有效的分辨率
+            if (!['1024x1024', '1280x720', '720x1280'].includes(size)) {
+                alert("无效的比例，请选择正确的比例！");
+                return;
+            }
+
+            // 检查是否输入了提示词
+            if (!prompt) {
+                alert("请输入生成提示词！");
+                return;
+            }
+
+            // 禁用生成按钮并显示加载动画
+            const btn = document.getElementById('generate-btn');
+            btn.disabled = true;
+            document.getElementById('loading-spinner').style.display = 'inline-block';
+
+            try {
+                // 发送 POST 请求到后端
+                const response = await fetch('/generate_image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, size, model })
+                });
+
+                // 解析响应数据
+                const data = await response.json();
+                console.log("生成响应:", data);
+
+                // 如果请求失败，抛出错误
+                if (!response.ok) throw new Error(data.error || '生成失败');
+
+                // 轮询检查生成状态
+                let retries = 0;
+                const maxRetries = 30;
+                while (retries < maxRetries) {
+                    await new Promise(r => setTimeout(r, 2000)); // 每隔 2 秒轮询一次
+                    const statusResponse = await fetch(`/check_status?task_id=${data.task_id}`);
+                    const statusData = await statusResponse.json();
+
+                    // 如果生成成功，显示图像并添加到历史记录
+                    if (statusData.status === 'succeeded') {
+                        const img = document.createElement('img');
+                        img.src = statusData.url;
+                        img.onerror = () => {
+                            img.src = " {% static 'images/error.png'}"; // 加载失败时显示默认图片
+                            img.onerror = null; // 防止无限循环
+                        };
+                        document.getElementById('result-image').innerHTML = '';
+                        document.getElementById('result-image').appendChild(img);
+                        addToHistory(statusData.url, prompt);
+                        break;
+                    }
+
+                    // 如果生成失败，抛出错误
+                    if (statusData.status === 'failed') {
+                        throw new Error(statusData.error);
+                    }
+
+                    retries++;
+                }
+
+                // 如果轮询超时，抛出错误
+                if (retries >= maxRetries) {
+                    throw new Error('生成超时，请稍后重试');
+                }
+            } catch (err) {
+                alert(`生成失败：${err.message}`);
+            } finally {
+                // 恢复生成按钮并隐藏加载动画
+                btn.disabled = false;
+                document.getElementById('loading-spinner').style.display = 'none';
+            }
+
+
+            document.querySelectorAll('.ratio-btn').forEach(btn => {
+                btn.disabled = !validRatios[currentModel].includes(btn.dataset.ratio);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

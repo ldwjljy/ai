@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <!-- 添加 viewport 元标签 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="ljy" content="width=device-width, initial-scale=1.0">
+  <!-- 使用 Django 静态文件引用语法 -->
+  <link rel="shortcut icon" href="{% static 'images/logo/LOGO.png' %}" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/logo/LOGO.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/logo/LOGO.png' %}">
+  <title>文韵智能AI图像生成平台-用户协议</title>
+  <style>
+    :root {
+      --primary-blue: #1677FF;
+      --nav-bg: rgba(255, 255, 255, 0.96);
+      --text-dark: #1a1a1a;
+      --gutter: 8%;
+    }
+
+    /* 重置样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "HarmonyOS Sans", system-ui, -apple-system, sans-serif;
+    }
+
+    /* 导航栏 - 与首页完全一致 */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      z-index: 1000;
+      padding: 0 var(--gutter);
+      transition: all 0.3s;
+    }
+
+    .nav-content {
+      display: flex;
+      height: 64px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      width: 60px;
+      transition: transform 0.3s;
+    }
+
+    .nav-logo:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-menu a {
+      color: var(--text-dark);
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .nav-menu a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-blue);
+      transition: width 0.3s;
+    }
+
+    .nav-menu a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-btn {
+      padding: 8px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .login-btn {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: var(--text-dark);
+    }
+
+    .signup-btn {
+      background: var(--primary-blue);
+      border: none;
+      color: white;
+    }
+
+    /* 协议内容样式 */
+    .agreement-container {
+      max-width: 1200px;
+      margin: calc(64px + 2rem) auto 60px;
+      padding: 0 var(--gutter);
+    }
+
+    .agreement-content {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      line-height: 1.8;
+    }
+
+    .section-title {
+      color: var(--primary-blue);
+      border-left: 4px solid var(--primary-blue);
+      padding-left: 15px;
+      margin: 40px 0 25px;
+      font-size: 1.5rem;
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      .nav-menu {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--nav-bg);
+        flex-direction: column;
+        padding: 20px var(--gutter);
+        gap: 15px;
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+
+      .nav-actions {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      .agreement-content {
+        padding: 20px;
+      }
+
+      /* 调整字体大小 */
+      body {
+        font-size: 14px;
+      }
+
+      .section-title {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* 在大屏幕下隐藏移动端菜单按钮 */
+    @media (min-width: 769px) {
+      .mobile-menu-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <img src="{% static 'images/logo/LOGO.png' %}" alt="Logo" class="nav-logo">
+      <ul class="nav-menu">
+        <li><a href="{% url 'index' %}">首页</a></li>
+        <li><a href="{% url 'creation' %}">创作中心</a></li>
+        <li><a href="{% url 'agreement' %}">用户协议</a></li>
+        <li><a href="{% url 'profile' %}">个人主页</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="{% url 'login' %}"><button class="nav-btn login-btn">登录</button></a>
+        <a href="{% url 'login' %}"><button class="nav-btn signup-btn">免费试用</button></a>
+      </div>
+      <!-- 添加移动端菜单按钮 -->
+      <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+  </nav>
+
+  <!-- 协议内容 -->
+  <div class="agreement-container">
+    <div class="agreement-content">
+      <h1>用户服务协议</h1>
+      <p class="update-time">最后更新日期：2025年04月01日</p>
+
+      <section id="section1">
+        <h2 class="section-title">一、协议确认与接受</h2>
+        <div class="clause-item">
+          <p>1.1 本《用户服务协议》（以下简称"本协议"）是您（以下简称"用户"）与本公司之间关于使用本平台服务的法律协议</p>
+        </div>
+      </section>
+
+      <section id="section2">
+        <h2 class="section-title">二、服务内容</h2>
+        <div class="clause-item">
+          <p>2.1 本公司通过本平台向用户提供AI图像生成服务，包括但不限于：</p>
+          <ul>
+            <li>基于文本描述的图像生成</li>
+            <li>生成作品的编辑与下载</li>
+            <li>社区作品展示与交流</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="contact">
+        <h2 class="section-title">联系我们</h2>
+        <p>电子邮箱：ldwjljy@foxmail.com<br>
+          联系电话：0755-123-456<br>
+          办公地址：深圳市福田区深圳鹏城技师学院</p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      const navMenu = document.querySelector('.nav-menu');
+      navMenu.classList.toggle('active');
+    }
+
+    // 导航栏交互 - 与首页完全一致
+    // 1. 滚动效果
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('.navbar');
+      navbar.style.backgroundColor = window.scrollY > 50
+        ? 'rgba(255,255,255,0.98)'
+        : 'rgba(255,255,255,0.96)';
+      navbar.style.boxShadow = window.scrollY > 50
+        ? '0 4px 20px rgba(0,0,0,0.1)'
+        : '0 2px 16px rgba(0,0,0,0.08)';
+    });
+
+    // 3. 当前页面高亮
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add('active');
+      }
+    });
+  </script>
+</body>
+
+</html>
